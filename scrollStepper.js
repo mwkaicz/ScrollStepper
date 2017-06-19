@@ -23,7 +23,6 @@ var ScrollStepper = (
         var scope = null;
         var ScrollStepper = function(slides, delay){
             this.keys = {37: false, 38: true, 39: false,40: true,33: true,34: true,35: true,36: true}; //left, up, right, down, pageup, pagedown, end, home 
-            this.slides = slides;
             this.scrollClick = false;
             this.touchStart = 0;
             this.lockTimeout = 0;
@@ -34,13 +33,10 @@ var ScrollStepper = (
             this.prevSlideObj = null; 
             this.pa = 0;
             this.pp = 0;
-            this.index = -1;
+            this.index = 0;
             this.newIndex = 0;
             
-            if (typeof this._slides['0'] !== 'undefined'){
-                this._slides['-' + window.innerHeight] = this._slides['0']; //mobile overscroll
-                delete this._slides['0'];
-            }
+            this.slides = slides;
 
             body = document.getElementsByTagName('BODY')[0];
             body.addEventListener('touchstart', this.touchstart, false);
@@ -53,7 +49,17 @@ var ScrollStepper = (
 
         Object.defineProperty(ScrollStepper.prototype, "slides", {
             get: function () { return this._slides; },
-            set: function (slides) { this._slides = slides; this._slidesKeys = Object.keys(this._slides); },
+            set: function (slides) { 
+                if (typeof slides['0'] !== 'undefined'){
+                    slides['-' + window.innerHeight] = slides['0']; 
+                    delete slides['0'];
+                }
+                this._slides = slides; 
+                this._slidesKeys = Object.keys(this._slides); 
+                this._slidesKeys.sort(function(a,b){
+                    return parseInt(a) > parseInt(b);
+                });
+            },
             enumerable: true,
             configurable: true
         });
@@ -178,7 +184,6 @@ var ScrollStepper = (
                     (dir > 0 && scope.index < scope._slidesKeys.length - 1) 
                     || (dir < 0 && scope.index > 0) )
                 { 
-                    
                     var nIndex = -1;
                     for (var i = 0; i < scope._slidesKeys.length; i++){
                         if (scope._slidesKeys[i] <= scope.pa){
@@ -193,10 +198,9 @@ var ScrollStepper = (
                         }
                     }
                     scope.newIndex = nIndex;
-                    
-
                 }
             }
+
             scope.processChange();
 
         };
@@ -214,14 +218,12 @@ var ScrollStepper = (
             scope.timeout = 0;
             scope.timer = now;
             var dir = scope.newIndex > scope.index ? 1 : -1;
-
             var obj = scope._slides[scope._slidesKeys[scope.index + dir]];
             scope.setActive(obj);
             if (scope.index >= 0){
                 var prevObj = scope._slides[scope._slidesKeys[scope.index]];
                 scope.setInactive(prevObj);
             }
-
             if (scope.newIndex !== scope.index + dir ){
                 scope.lockScroll();
                 setTimeout(scope.processChange, scope.delay);
