@@ -56,8 +56,10 @@ var ScrollStepper = (
                 }
                 this._slides = slides; 
                 this._slidesKeys = Object.keys(this._slides); 
-                this._slidesKeys.sort(function(a,b){
-                    return parseInt(a) > parseInt(b);
+                this._slidesKeys = this._slidesKeys.sort(function(a,b){
+                    if (parseInt(a) > parseInt(b)) {return 1;}
+                    if (parseInt(a) < parseInt(b)) {return -1;}
+                    return 0;
                 });
             },
             enumerable: true,
@@ -186,9 +188,9 @@ var ScrollStepper = (
                 { 
                     var nIndex = -1;
                     for (var i = 0; i < scope._slidesKeys.length; i++){
-                        if (scope._slidesKeys[i] <= scope.pa){
+                        if (parseInt(scope._slidesKeys[i]) <= scope.pa){
                             if (i < scope._slidesKeys.length - 1){
-                                if (scope._slidesKeys[i+1] > scope.pa){
+                                if (parseInt(scope._slidesKeys[i+1]) > scope.pa){
                                     nIndex = i;
                                     break;
                                 }
@@ -200,7 +202,6 @@ var ScrollStepper = (
                     scope.newIndex = nIndex;
                 }
             }
-
             scope.processChange();
 
         };
