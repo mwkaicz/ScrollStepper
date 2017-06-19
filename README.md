@@ -13,7 +13,7 @@ Code example:
         2000: {'#test6': {active: {'class': 'active'}, inactive: {'class': ''}}},
       };
 
-      scrollStepper = new ScrollStepper(schema, 500);
+      scrollStepper = new ScrollStepper(schema, 500); //schema, step delay
 
       body = document.getElementsByTagName('BODY')[0];
       body.style.height = (window.innerHeight + 2000) + 'px';
